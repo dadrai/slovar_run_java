@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.event.*;
-import  java.sql.*;
+import java.awt.*;
+import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 
 public class MainForm {
@@ -13,7 +15,7 @@ public class MainForm {
     private JButton search;
     private JButton delete;
     private JTextField txtsearch;
-    private JTable table1;
+    private JTable table1 ;
     private JButton update;
     private JTextArea txtdescrun;
     private JScrollPane table_1;
@@ -46,13 +48,15 @@ public class MainForm {
         frame.pack();
         frame.setVisible(true);
         MainForm app = new MainForm();
-        app.loadData();
+        app.checkTables();
         app.mainInterface();
+        app.loadData();
+
         
 
     }
 
-    private void mainInterface(){
+    public void mainInterface(){
 
 
     }
@@ -70,7 +74,21 @@ public class MainForm {
 
     }
 
-
+    private void checkTables() {
+        System.out.println("Check table");
+        String sql = "CREATE TABLE IF NOT EXISTS runs (" +
+                "	id_run integer PRIMARY KEY AUTOINCREMENT," +
+                "	run_name text NOT NULL," +
+                "	description_run text NOT NULL," +
+                "	name_run_low text NOT NULL" +
+                ");";
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql);
+        } catch (Exception err) {
+            System.out.println(err);
+        }
+    }
 
 
 
@@ -89,6 +107,7 @@ public class MainForm {
                 String name_run, descr_run;
                 name_run = txtrunName.getText();
                 descr_run = txtdescrun.getText();
+                String name_run_low = name_run.toLowerCase();
 
 
                 if (name_run.isEmpty() || descr_run.isEmpty()) {
@@ -102,8 +121,8 @@ public class MainForm {
                         try {
                             System.out.println("Add Run - " + name_run);
                             Statement stmt = conn.createStatement();
-                            stmt.executeUpdate("insert into runs (`name_run`, `description_run`) VALUES ('" +
-                                    name_run + "','" + descr_run + "')");
+                            stmt.executeUpdate("insert into runs (`name_run`, `description_run`,`name_run_low`) VALUES ('" +
+                                    name_run + "','" + descr_run + "','" + name_run_low + "')");
                             loadData();
                         } catch (Exception err) {
                             System.out.println(err.getMessage());
@@ -159,6 +178,7 @@ public class MainForm {
             public void actionPerformed(ActionEvent e) {
                 String runname = txtrunName.getText();
                 String rundesc = txtdescrun.getText();
+                String name_run_low = runname.toLowerCase();
                 String sql = null;
                 if (run == null) {
                     System.out.println("Null");
@@ -172,7 +192,8 @@ public class MainForm {
                             System.out.println("Update Run - " + run.runname);
                             Statement stmt = conn.createStatement();
                             sql = "update runs set name_run = '" + runname + "', description_run = '" +
-                                      rundesc + "'  where id_run =" + run.runid + "";
+                                      rundesc + "', name_run_low = '" + name_run_low +
+                                    "'  where id_run =" + run.runid + "";
                             stmt.executeUpdate(sql);
                             loadData();
                         } catch (Exception err) {
@@ -188,13 +209,16 @@ public class MainForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String search = txtsearch.getText();
-                System.out.println("Search: "+search);
+                System.out.println("Search: "+search );
+                //String sql ="select * from runs where name_run COLLATE NOCASE LIKE '%" + search + "%' " ;
+                String sql ="select * from runs where LOWER(name_run) LIKE LOWER('%" + search + "%') or name_run_low like ('%" + search + "%')";
+                System.out.println("SQl: "+sql );
                 table1.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
                 runlist = new ArrayList<>();
                 try {
-
                     Statement stmt = conn.createStatement();
-                    rs = stmt.executeQuery("select * from runs where name_run LIKE LOWER('%" + search + "%') ");
+
+                    rs = stmt.executeQuery(sql);
                     runlist.clear();
                     while (rs.next()) {
                         runlist.add(new Run(rs.getInt(1), rs.getString(2), rs.getString(3)));
@@ -240,9 +264,35 @@ public class MainForm {
     }
 
     private void table_load() throws SQLException{
+
         table1.setModel(dtm);
         dtm.setColumnIdentifiers(header);
+
+//        // Автоматически настраиваем высоту строки в зависимости от содержимого ячейки
+//        table1.setRowHeight(0, table1.getRowHeight()); // Resetting the row height for accurate calculations
+//        for (int row = 0; row < table1.getRowCount(); row++) {
+//            int rowHeight = table1.getRowHeight();
+//            for (int col = 0; col < table1.getColumnCount(); col++) {
+//                Component comp = table1.prepareRenderer(table1.getCellRenderer(row, col), row, col);
+//                rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+//            }
+//            table1.setRowHeight(row, rowHeight);}
+
+        // Скрываем первый столбец (столбец с индексом 0)
+        table1.getColumnModel().getColumn(0).setMinWidth(0);
+        table1.getColumnModel().getColumn(0).setMaxWidth(0);
+        table1.getColumnModel().getColumn(0).setWidth(0);
+
+        // Устанавливаем ширину столбцов (по вашему выбору)
+        table1.getColumnModel().getColumn(1).setPreferredWidth(50);
+        table1.getColumnModel().getColumn(2).setPreferredWidth(300);
+
+        //table1.setRowHeight(100);
+
+
+
     }
+
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
