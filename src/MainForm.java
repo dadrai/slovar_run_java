@@ -1,14 +1,12 @@
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 
 public class MainForm {
-    private JPanel panelMain;
+    public JPanel panelMain;
     private JTextField txtrunName;
     private JTextField txtrunText;
     private JButton addButton;
@@ -18,6 +16,7 @@ public class MainForm {
     private JTable table1 ;
     private JButton update;
     private JTextArea txtdescrun;
+    private JButton cleartxt;
     private JScrollPane table_1;
     private JFrame frame;
 
@@ -42,17 +41,17 @@ public class MainForm {
     int row, col;
 
     public static void main(String[] args) throws Exception {
-        JFrame frame = new JFrame("Добавление Рун");
-        frame.setContentPane(new MainForm().panelMain);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
+//        JFrame frame = new JFrame("Добавление Рун");
+//        frame.setContentPane(new MainForm().panelMain);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.pack();
+//        frame.setVisible(true);
+//        frame.setLocationRelativeTo(null);
+
         MainForm app = new MainForm();
         app.checkTables();
         app.mainInterface();
         app.loadData();
-
-        
 
     }
 
@@ -65,7 +64,7 @@ public class MainForm {
             //Class.forName("org.sqlite.JDBC");
             String url = "jdbc:sqlite:identifier.sqlite";
             conn = DriverManager.getConnection(url);
-            System.out.println("Connect Success!");
+            System.out.println("Connect Success! From MainForm");
         }
        catch (SQLException ex){
 
@@ -78,9 +77,9 @@ public class MainForm {
         System.out.println("Check table");
         String sql = "CREATE TABLE IF NOT EXISTS runs (" +
                 "	id_run integer PRIMARY KEY AUTOINCREMENT," +
-                "	run_name text NOT NULL," +
-                "	description_run text NOT NULL," +
-                "	name_run_low text NOT NULL" +
+                "	run_name varchar(8) NOT NULL," +
+                "	description_run varchar(256) NOT NULL," +
+                "	name_run_low varchar(8) NOT NULL" +
                 ");";
         try {
             Statement stmt = conn.createStatement();
@@ -95,6 +94,7 @@ public class MainForm {
     public MainForm() {
         connect(); //Connect k database
         try {
+           // loadData();
             table_load();
         }
        catch (SQLException e){
@@ -147,6 +147,14 @@ public class MainForm {
                 }
             }
         });
+        cleartxt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                txtrunName.setText("");
+                txtdescrun.setText("");
+            }
+        });
+
         table1.addComponentListener(new ComponentAdapter() {
         });
         delete.addActionListener(new ActionListener() {
@@ -238,6 +246,8 @@ public class MainForm {
                 }
             }
         });
+
+
     }
 
 
@@ -267,6 +277,9 @@ public class MainForm {
 
         table1.setModel(dtm);
         dtm.setColumnIdentifiers(header);
+//// Центрирование текста в таблице
+//        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)table1.getDefaultRenderer(String.class);
+//        renderer.setHorizontalAlignment(SwingConstants.CENTER);
 
 //        // Автоматически настраиваем высоту строки в зависимости от содержимого ячейки
 //        table1.setRowHeight(0, table1.getRowHeight()); // Resetting the row height for accurate calculations
@@ -285,9 +298,9 @@ public class MainForm {
 
         // Устанавливаем ширину столбцов (по вашему выбору)
         table1.getColumnModel().getColumn(1).setPreferredWidth(50);
-        table1.getColumnModel().getColumn(2).setPreferredWidth(300);
+        table1.getColumnModel().getColumn(2).setPreferredWidth(400);
 
-        //table1.setRowHeight(100);
+        table1.setRowHeight(30);
 
 
 

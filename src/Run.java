@@ -6,4 +6,5 @@ public class Run {
         this.runname = runname;
         this.rundesc = rundesc;
     }
+
 }

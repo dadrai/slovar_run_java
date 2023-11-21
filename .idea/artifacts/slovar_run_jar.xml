@@ -3,8 +3,8 @@
     <output-path>$PROJECT_DIR$/out/artifacts/slovar_run_jar</output-path>
     <root id="archive" name="slovar_run.jar">
       <element id="module-output" name="slovar_run" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/sqlite-jdbc-3.39.2.0.jar" path-in-jar="/" />
       <element id="library" level="project" name="sqlite-jdbc-3.44.0.0" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/sqlite-jdbc-3.39.2.0.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
