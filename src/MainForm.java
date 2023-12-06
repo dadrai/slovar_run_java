@@ -1,8 +1,13 @@
+
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import table.TableCustom;
+
 
 
 public class MainForm {
@@ -17,8 +22,13 @@ public class MainForm {
     private JButton update;
     private JTextArea txtdescrun;
     private JButton cleartxt;
+    private JButton otmena;
+    private JPanel button_panel;
+    private JScrollPane jScrollPane1;
     private JScrollPane table_1;
-    private JFrame frame;
+    public JFrame frame;
+
+    //private SlovarViev slovarViev = new SlovarViev();
 
     ArrayList<Run> runlist;
     Run run;
@@ -37,36 +47,38 @@ public class MainForm {
 
     static Connection conn;
     ResultSet rs;
-    PreparedStatement pst;
-    int row, col;
+
 
     public static void main(String[] args) throws Exception {
-//        JFrame frame = new JFrame("Добавление Рун");
-//        frame.setContentPane(new MainForm().panelMain);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.pack();
-//        frame.setVisible(true);
-//        frame.setLocationRelativeTo(null);
 
-        MainForm app = new MainForm();
-        app.checkTables();
-        app.mainInterface();
-        app.loadData();
+//        MainForm app = new MainForm();
+//        app.checkTables();
+//        app.connect();
+//        app.loadData();
+//        app.mainInterface();
+
 
     }
 
     public void mainInterface(){
 
-
+//        frame = new JFrame("Добавление Рун");
+//        frame.setContentPane(new MainForm().panelMain);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.pack();
+//        frame.setVisible(true);
+//        frame.setLocationRelativeTo(null);
     }
     public void connect(){
         try {
-            //Class.forName("org.sqlite.JDBC");
+            Class.forName("org.sqlite.JDBC");
             String url = "jdbc:sqlite:identifier.sqlite";
+           // String url = "jdbc:sqlite:slovar.db";
+
             conn = DriverManager.getConnection(url);
             System.out.println("Connect Success! From MainForm");
         }
-       catch (SQLException ex){
+       catch (Exception ex){
 
            System.out.println(ex.getMessage());
        }
@@ -74,19 +86,19 @@ public class MainForm {
     }
 
     private void checkTables() {
-        System.out.println("Check table");
-        String sql = "CREATE TABLE IF NOT EXISTS runs (" +
-                "	id_run integer PRIMARY KEY AUTOINCREMENT," +
-                "	run_name varchar(8) NOT NULL," +
-                "	description_run varchar(256) NOT NULL," +
-                "	name_run_low varchar(8) NOT NULL" +
-                ");";
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
-        } catch (Exception err) {
-            System.out.println(err);
-        }
+//        System.out.println("Check table");
+//        String sql = "CREATE TABLE IF NOT EXISTS runs (" +
+//                "	id_run integer PRIMARY KEY AUTOINCREMENT," +
+//                "	name_run varchar(8) NOT NULL," +
+//                "	description_run varchar(256) NOT NULL," +
+//                "	name_run_low varchar(8) NOT NULL" +
+//                ");";
+//        try {
+//            Statement stmt = conn.createStatement();
+//            stmt.executeUpdate(sql);
+//        } catch (Exception err) {
+//            System.out.println(err.getMessage());
+//        }
     }
 
 
@@ -94,8 +106,9 @@ public class MainForm {
     public MainForm() {
         connect(); //Connect k database
         try {
-           // loadData();
             table_load();
+            loadData();
+
         }
        catch (SQLException e){
             System.out.println(e.getMessage());
@@ -104,8 +117,11 @@ public class MainForm {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                connect();
+
                 String name_run, descr_run;
-                name_run = txtrunName.getText();
+                name_run =  txtrunName.getText().substring(0,1).toUpperCase()+txtrunName.getText().substring(1).toLowerCase();
+
                 descr_run = txtdescrun.getText();
                 String name_run_low = name_run.toLowerCase();
 
@@ -126,6 +142,10 @@ public class MainForm {
                             loadData();
                         } catch (Exception err) {
                             System.out.println(err.getMessage());
+                        }finally {
+                            try { rs.close(); } catch (Exception err) { /* Ignored */ }
+                            // try { ps.close(); } catch (Exception e) { /* Ignored */ }
+                            try { conn.close(); } catch (Exception err) { /* Ignored */ }
                         }
                     }
                 }
@@ -160,6 +180,8 @@ public class MainForm {
         delete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                connect();
+
                 if (run == null) {
                     System.out.println("Null");
                 } else {
@@ -175,6 +197,10 @@ public class MainForm {
                             loadData();
                         } catch (Exception err) {
                             System.out.println(err.getMessage());
+                        }finally {
+                            try { rs.close(); } catch (Exception err) { /* Ignored */ }
+                            // try { ps.close(); } catch (Exception e) { /* Ignored */ }
+                            try { conn.close(); } catch (Exception err) { /* Ignored */ }
                         }
                     }
 
@@ -184,7 +210,8 @@ public class MainForm {
         update.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String runname = txtrunName.getText();
+                connect();
+                String runname = txtrunName.getText().substring(0,1).toUpperCase()+txtrunName.getText().substring(1).toLowerCase();
                 String rundesc = txtdescrun.getText();
                 String name_run_low = runname.toLowerCase();
                 String sql = null;
@@ -207,6 +234,10 @@ public class MainForm {
                         } catch (Exception err) {
                             System.out.println(err.getMessage());
                             System.out.println(sql);
+                        }finally {
+                            try { rs.close(); } catch (Exception err) { /* Ignored */ }
+                            // try { ps.close(); } catch (Exception e) { /* Ignored */ }
+                            try { conn.close(); } catch (Exception err) { /* Ignored */ }
                         }
                     }
 
@@ -216,6 +247,7 @@ public class MainForm {
         search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                connect();
                 String search = txtsearch.getText();
                 System.out.println("Search: "+search );
                 //String sql ="select * from runs where name_run COLLATE NOCASE LIKE '%" + search + "%' " ;
@@ -232,21 +264,34 @@ public class MainForm {
                         runlist.add(new Run(rs.getInt(1), rs.getString(2), rs.getString(3)));
                     }
                     dtm.setRowCount(0); // reset data model
-                    for (int i = 0; i < runlist.size(); i++) {
+                    for (Run value : runlist) {
                         Object[] objs = {
-                                runlist.get(i).runid,
-                                runlist.get(i).runname,
-                                runlist.get(i).rundesc
+                                value.runid,
+                                value.runname,
+                                value.rundesc
                         };
                         dtm.addRow(objs);
                     }
 
                 } catch (Exception err) {
                     System.out.println(err.getMessage());
+                }finally {
+                    try { rs.close(); } catch (Exception err) { /* Ignored */ }
+                   // try { ps.close(); } catch (Exception e) { /* Ignored */ }
+                    try { conn.close(); } catch (Exception err) { /* Ignored */ }
                 }
             }
         });
 
+       
+        otmena.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Close Spisok Runs");
+                SlovarViev.closeFrame();
+            }
+        });
 
     }
 
@@ -255,7 +300,7 @@ public class MainForm {
         System.out.println("Load data");
         runlist = new ArrayList<>();
         Statement stmt = conn.createStatement();
-        rs = stmt.executeQuery("select * from runs");
+        rs = stmt.executeQuery("select * from runs ORDER BY `name_run`");
         runlist.clear();
         while (rs.next()) {
             runlist.add(new Run(rs.getInt(1), rs.getString(2), rs.getString(3)));
@@ -275,21 +320,20 @@ public class MainForm {
 
     private void table_load() throws SQLException{
 
+        //Стиль таблицы с переносом строк
+        TableCustom.apply(jScrollPane1, TableCustom.TableType.MULTI_LINE);
+
         table1.setModel(dtm);
         dtm.setColumnIdentifiers(header);
 //// Центрирование текста в таблице
 //        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)table1.getDefaultRenderer(String.class);
 //        renderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-//        // Автоматически настраиваем высоту строки в зависимости от содержимого ячейки
-//        table1.setRowHeight(0, table1.getRowHeight()); // Resetting the row height for accurate calculations
-//        for (int row = 0; row < table1.getRowCount(); row++) {
-//            int rowHeight = table1.getRowHeight();
-//            for (int col = 0; col < table1.getColumnCount(); col++) {
-//                Component comp = table1.prepareRenderer(table1.getCellRenderer(row, col), row, col);
-//                rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
-//            }
-//            table1.setRowHeight(row, rowHeight);}
+
+
+
+        //Шрифт шапки таблицы
+        table1.getTableHeader().setFont(new Font("Arial", Font.BOLD, 18));
 
         // Скрываем первый столбец (столбец с индексом 0)
         table1.getColumnModel().getColumn(0).setMinWidth(0);
@@ -297,7 +341,10 @@ public class MainForm {
         table1.getColumnModel().getColumn(0).setWidth(0);
 
         // Устанавливаем ширину столбцов (по вашему выбору)
-        table1.getColumnModel().getColumn(1).setPreferredWidth(50);
+        table1.getColumnModel().getColumn(1).setPreferredWidth(150);
+        table1.getColumnModel().getColumn(1).setMaxWidth(150);
+
+
         table1.getColumnModel().getColumn(2).setPreferredWidth(400);
 
         table1.setRowHeight(30);
@@ -309,4 +356,5 @@ public class MainForm {
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
+
 }
