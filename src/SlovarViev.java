@@ -126,7 +126,7 @@ public class SlovarViev {
         showruns.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frameShowRuns = new JFrame("Добавление Слов");
+                frameShowRuns = new JFrame("Список Рун");
                 frameShowRuns.setContentPane(new RunsView().panelMain);
                 frameShowRuns.pack();
                 frameShowRuns.setLocationRelativeTo(null);
