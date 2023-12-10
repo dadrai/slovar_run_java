@@ -87,6 +87,7 @@ public class DataToPdfSlova {
 
 
             jt.print(JTable.PrintMode.FIT_WIDTH, header,footer);
+
         }catch (Exception err){
             System.out.println(err.getMessage());
         }

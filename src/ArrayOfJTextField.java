@@ -35,6 +35,8 @@ public class ArrayOfJTextField {
     }
     ArrayOfJTextField (int count, String[] runs) {
         frame = new JFrame("Добавление Рун");
+        frame.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.png"));
+
         //fields = new JTextField[count];
         i_runs = new int[count]; // Список индексов рун которые нужно добавить
         JPanel pane1 = new JPanel(new FlowLayout(FlowLayout.CENTER));

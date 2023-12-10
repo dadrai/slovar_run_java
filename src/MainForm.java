@@ -251,7 +251,7 @@ public class MainForm {
                 String search = txtsearch.getText();
                 System.out.println("Search: "+search );
                 //String sql ="select * from runs where name_run COLLATE NOCASE LIKE '%" + search + "%' " ;
-                String sql ="select * from runs where LOWER(name_run) LIKE LOWER('%" + search + "%') or name_run_low like ('%" + search + "%')";
+                String sql ="select * from runs where LOWER(name_run) LIKE LOWER('%" + search + "%') or name_run_low like ('%" + search + "%') ORDER BY `name_run`";
                 System.out.println("SQl: "+sql );
                 table1.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
                 runlist = new ArrayList<>();

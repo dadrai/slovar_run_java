@@ -25,6 +25,7 @@ public class SlovarViev {
     public static JFrame frameRun;
     public static JFrame framecrudslov;
 
+    public static JFrame frameShowRuns; //Окно для клиентской части
 
 
     ArrayList<Slova> slovalist;
@@ -64,7 +65,7 @@ public class SlovarViev {
         JFrame frame = new JFrame("Словарь Рун");
         frame.setContentPane(new SlovarViev().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        frame.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.png"));
 
         Font font = new Font("Arial", Font.PLAIN, 16);
 
@@ -115,10 +116,25 @@ public class SlovarViev {
 //        JMenuItem openItem = new JMenuItem("Open");
 //        openItem.setFont(font);
 //        fileMenu.add(openItem);
-//
-//        JMenuItem closeItem = new JMenuItem("Close");
-//        closeItem.setFont(font);
-//        fileMenu.add(closeItem);
+
+
+        /// Пункт меню только для Клиентской части
+        JMenuItem showruns = new JMenuItem(" Список Рун");
+        showruns.setFont(font);
+        Menu.add(showruns);
+
+        showruns.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frameShowRuns = new JFrame("Добавление Слов");
+                frameShowRuns.setContentPane(new RunsView().panelMain);
+                frameShowRuns.pack();
+                frameShowRuns.setLocationRelativeTo(null);
+                frameShowRuns.setVisible(true);
+                frameShowRuns.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.png"));
+            }
+        });
+        //////////////////////////////////////////////////////////
 
         Menu.addSeparator(); // Разделитель
 
@@ -162,6 +178,7 @@ public class SlovarViev {
                 framecrudslov.pack();
                 framecrudslov.setLocationRelativeTo(null);
                 framecrudslov.setVisible(true);
+                framecrudslov.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.png"));
 
             }
         });
@@ -177,6 +194,7 @@ public class SlovarViev {
                 frameRun.pack();
                 frameRun.setVisible(true);
                 frameRun.setLocationRelativeTo(null);
+                frameRun.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.png"));
 
 
             }
@@ -229,6 +247,10 @@ public class SlovarViev {
     }
     public static void closeFrameCrud() {
         framecrudslov.dispose();
+    }
+
+    public static void closeFrameShowRuns() {
+        frameShowRuns.dispose();
     }
 
     
@@ -289,7 +311,7 @@ public class SlovarViev {
                 String search = textsearch.getText();
                 System.out.println("Search: "+search );
                 //String sql ="select * from runs where name_run COLLATE NOCASE LIKE '%" + search + "%' " ;
-                String sql ="select * from slova where LOWER(slovo) LIKE LOWER('%" + search + "%') or low_slov like ('%" + search + "%') ";
+                String sql ="select * from slova where LOWER(slovo) LIKE LOWER('%" + search + "%') or low_slov like ('%" + search + "%') ORDER BY `slovo`";
                 System.out.println("SQl: "+sql );
                 table1.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
                 slovalist = new ArrayList<>();

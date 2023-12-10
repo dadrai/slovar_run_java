@@ -203,7 +203,7 @@ public class CrudSlov {
                 String search = textsearch.getText();
                 System.out.println("Search: "+search );
                 //String sql ="select * from runs where name_run COLLATE NOCASE LIKE '%" + search + "%' " ;
-                String sql ="select * from slova where LOWER(slovo) LIKE LOWER('%" + search + "%') or low_slov like ('%" + search + "%')";
+                String sql ="select * from slova where LOWER(slovo) LIKE LOWER('%" + search + "%') or low_slov like ('%" + search + "%') ORDER BY `slovo`";
                 System.out.println("SQl: "+sql );
                 table1.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
                 slovalist = new ArrayList<>();
